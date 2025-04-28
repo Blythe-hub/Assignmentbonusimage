@@ -121,23 +121,28 @@ class Graph:
     def __init__(self):
         self.vertices = []            # list of Vertex
         self.adjacency_matrix = []    # 2D list
+
     def has_vertex(self, label):
         return any(v.label == label for v in self.vertices)
+
     def get_index(self, label):
         for i, v in enumerate(self.vertices):
             if v.label == label:
                 return i
         return -1
+
     def add_vertex(self, label):
-        if self.has_vertex(label): return
+        if self.has_vertex(label):
+            return
         self.vertices.append(Vertex(label))
-        # expand adjacency matrix
         n = len(self.vertices)
         for row in self.adjacency_matrix:
             row.append(0)
         self.adjacency_matrix.append([0]*n)
+
     def add_edge(self, start, finish):
         self.adjacency_matrix[start][finish] = 1
+
     def get_adjacent_vertices(self, idx):
         return [j for j, val in enumerate(self.adjacency_matrix[idx]) if val]
 
@@ -151,7 +156,8 @@ class Graph:
             maxd = 0
             for j in self.get_adjacent_vertices(i):
                 d = 1 + dfs(j)
-                if d > maxd: maxd = d
+                if d > maxd:
+                    maxd = d
             v.depth = maxd
             return maxd
         for i in range(n):
@@ -167,7 +173,8 @@ class Graph:
             recstack[i] = True
             for j in self.get_adjacent_vertices(i):
                 if not visited[j]:
-                    if dfs(j): return True
+                    if dfs(j):
+                        return True
                 elif recstack[j]:
                     return True
             recstack[i] = False
@@ -182,9 +189,7 @@ class Graph:
         n = len(self.vertices)
         if n == 0:
             return []
-        # compute depths
         self.compute_depth()
-        # compute in-degrees
         in_degree = [0]*n
         for u in range(n):
             for v in self.get_adjacent_vertices(u):
@@ -194,42 +199,38 @@ class Graph:
         remain = n
         while remain > 0:
             available = [i for i in range(n) if in_degree[i]==0 and not scheduled[i]]
-            # sort by depth descending
             available.sort(key=lambda x: self.vertices[x].depth, reverse=True)
-            # take up to 4
             sem = available[:4]
             if not sem:
                 break
-            # mark scheduled and update in-degrees
             for i in sem:
                 scheduled[i] = True
             for i in sem:
                 for j in self.get_adjacent_vertices(i):
                     in_degree[j] -= 1
-            # append labels
             plan.append([self.vertices[i].label for i in sem])
             remain -= len(sem)
         return plan
+
 
 def main():
     graph = Graph()
     data = sys.stdin.read().splitlines()
     idx = 0
-    # number of vertices
-    num_v = int(data[idx].strip()); idx+=1
+    num_v = int(data[idx].strip()); idx += 1
     for _ in range(num_v):
-        label = data[idx].strip(); idx+=1
+        label = data[idx].strip(); idx += 1
         graph.add_vertex(label)
-    num_e = int(data[idx].strip()); idx+=1
+    num_e = int(data[idx].strip()); idx += 1
     for _ in range(num_e):
-        parts = data[idx].split(); idx+=1
-        u = graph.get_index(parts[0]); v = graph.get_index(parts[1])
+        parts = data[idx].split(); idx += 1
+        u = graph.get_index(parts[0])
+        v = graph.get_index(parts[1])
         graph.add_edge(u, v)
     if graph.has_cycle():
         print("Registration plan invalid because a cycle was detected.")
     else:
         print("Valid registration plan detected.")
-        graph.compute_depth()
         plan = graph.get_registration_plan()
         print()
         print("Registration plan: ")
