@@ -1,7 +1,7 @@
 """
 Student information for this assignment:
 
-Replace Varun Venkatesh with your name.
+
 On my/our honor, Varun Venkatesh, this
 programming assignment is my own work and I have not provided this code to
 any other student.
